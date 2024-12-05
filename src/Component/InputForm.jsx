@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { MdDelete } from "react-icons/md";
+import { FaPlus } from "react-icons/fa";
 
 const InputForm = () => {
   const [timeSlots, setTimeSlots] = useState("");
@@ -22,33 +23,13 @@ const InputForm = () => {
     return id;
   };
 
-  const [yearName, setYearName] = useState("");
-  const [section, setSection] = useState("");
-  const [yearDetailArray, setYearDetailArray] = useState([]);
-
-  const handleYearSubmit = () => {
-    const newYear = {
-      yearID: idGenrator("year"),
-      yearName: yearName,
-      section: "",
-      semester: "",
-    };
-    setYearDetailArray((prev) => [...prev, newYear]);
-    console.log(yearDetailArray);
-    setYearName("");
-    
-  };
-
-  const handleYearNameChange = (e) => {
-    setYearName(e.target.value);
-  };
-
-  useEffect(() => {
-    if (yearDetailArray.length > 0) {
-      console.log(yearDetailArray);
-    }
-  }, [yearDetailArray]);
-
+  const [section, setSection] = useState([
+    {
+      yearId: idGenrator("year"),
+      yearName: "",
+      NoofSections: "",
+    },
+  ]);
   const [facultyDataArray, setFacultyDataArray] = useState([
     { facultyID: idGenrator("fac"), facultyName: "", assignedSubject: "" },
   ]);
@@ -80,6 +61,17 @@ const InputForm = () => {
     ]);
   };
 
+  const addSectionPerYear = () => {
+    setSection([
+      ...section,
+      {
+        yearId: idGenrator("year"),
+        yearName: "",
+        NoofSections: "",
+      },
+    ]);
+  };
+
   const storeFacultyData = () => {
     const newSubjectDetailArray = facultyDataArray.map((faculty) => ({
       subjectID: idGenrator("sub"),
@@ -100,36 +92,54 @@ const InputForm = () => {
     }
   }, [subjectDetailArray]);
 
-  const handleDeleteButton = (index) => {
-    const newFacultyData = facultyDataArray.filter((_, i) => i !== index);
-    setFacultyDataArray(newFacultyData);
+  const handleDeleteFacultyInputFieldButton = (index) => {
+    if (facultyDataArray.length > 1) {
+      const newFacultyData = facultyDataArray.filter((_, i) => i !== index);
+      setFacultyDataArray(newFacultyData);
+    }
+  };
+
+  const handleDeleteSectionPerYearInputFields = (index) => {
+    if (section.length > 1) {
+      const newSectionPerYear = section.filter((_, i) => i !== index);
+      setSection(newSectionPerYear);
+    }
   };
 
   return (
     <>
       <div className="row my-4 mx-0">
         <div>
-          <div className="row mx-5">
-            <Input
-              className="col-6"
-              placeholder="Enter Year"
-              value={yearName}
-              onChange={handleYearNameChange}
-            />
+          <div className="col-6 d-flex justify-content-around mx-5">
+            <label>Year</label>
+            <label>Number of sections</label>
           </div>
-          <button
-            className="btn btn-success btn-sm mt-2 mx-5 mb-4"
-            onClick={handleYearSubmit}
+          {section.map((session, index) => (
+            <div className="row mx-5">
+              <div className="col-6 px-0">
+                <Space.Compact className="w-100 mb-2">
+                  <Input className="text-center" placeholder="Enter Year" />
+                  <Input
+                    className="text-center"
+                    placeholder="Enter number of section"
+                  />
+                  <Button
+                    className="btn btn-danger d-flex align-items-center"
+                    onClick={() =>  handleDeleteSectionPerYearInputFields (index)}
+                  >
+                    <MdDelete />
+                  </Button>
+                </Space.Compact>
+              </div>
+            </div>
+          ))}
+          <Button
+            className="btn btn-success d-flex align-items-center mx-5"
+            onClick={addSectionPerYear}
           >
-            Submit
-          </button>
-          <div className="row mx-5">
-            <Input className="col-6" placeholder="Enter Number of section" />
-          </div>
-          <button className="btn btn-success btn-sm mt-2 mx-5 mb-4">
-            Submit
-          </button>
-          <div></div>
+            Add
+          </Button>
+
           <div className="row mx-5">
             <div className="col-6  px-0">
               <div className="d-flex justify-content-around ">
@@ -156,7 +166,7 @@ const InputForm = () => {
                   />
                   <Button
                     className="btn btn-danger d-flex align-items-center"
-                    onClick={() => handleDeleteButton(index)}
+                    onClick={() => handleDeleteFacultyInputFieldButton(index)}
                   >
                     <MdDelete />
                   </Button>
