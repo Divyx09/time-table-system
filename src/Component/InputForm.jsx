@@ -1,20 +1,22 @@
 import { Input, Space, Button } from "antd";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { MdDelete } from "react-icons/md";
-import { FaPlus } from "react-icons/fa";
+import getQueryData from "../api/getQueryData";
 
 const InputForm = () => {
-  const [timeSlots, setTimeSlots] = useState("");
+  // const [timeSlots, setTimeSlots] = useState("");
 
-  const [classRoomId, setClassRoomId] = useState("");
-  const [classRoomNumber, setClassRoomNumber] = useState("");
-  const [classCapacity, setClassCapacity] = useState("");
+  // const [classRoomId, setClassRoomId] = useState("");
+  // const [classRoomNumber, setClassRoomNumber] = useState("");
+  // const [classCapacity, setClassCapacity] = useState("");
 
-  const [labId, setLabId] = useState("");
-  const [labNumber, setLabNumber] = useState("");
-  const [labCapacity, setLabCapacity] = useState("");
+  // const [labId, setLabId] = useState("");
+  // const [labNumber, setLabNumber] = useState("");
+  // const [labCapacity, setLabCapacity] = useState("");
+
+  const { data, error } = getQueryData();
 
   const idGenrator = (initials) => {
     let id = "";
@@ -106,26 +108,30 @@ const InputForm = () => {
     }
   };
 
+  useEffect(() => {
+    console.log(data);
+  }, []);
+
   return (
     <>
-      <div className="row my-4 mx-0">
+      <div className='row my-4 mx-0'>
         <div>
-          <div className="col-6 d-flex justify-content-around mx-5">
+          <div className='col-6 d-flex justify-content-around mx-5'>
             <label>Year</label>
             <label>Number of sections</label>
           </div>
           {section.map((session, index) => (
-            <div className="row mx-5">
-              <div className="col-6 px-0">
-                <Space.Compact className="w-100 mb-2">
-                  <Input className="text-center" placeholder="Enter Year" />
+            <div className='row mx-5' key={index}>
+              <div className='col-6 px-0'>
+                <Space.Compact className='w-100 mb-2'>
+                  <Input className='text-center' placeholder='Enter Year' />
                   <Input
-                    className="text-center"
-                    placeholder="Enter number of section"
+                    className='text-center'
+                    placeholder='Enter number of section'
                   />
                   <Button
-                    className="btn btn-danger d-flex align-items-center"
-                    onClick={() =>  handleDeleteSectionPerYearInputFields (index)}
+                    className='btn btn-danger d-flex align-items-center'
+                    onClick={() => handleDeleteSectionPerYearInputFields(index)}
                   >
                     <MdDelete />
                   </Button>
@@ -134,38 +140,38 @@ const InputForm = () => {
             </div>
           ))}
           <Button
-            className="btn btn-success d-flex align-items-center mx-5"
+            className='btn btn-success d-flex align-items-center mx-5'
             onClick={addSectionPerYear}
           >
             Add
           </Button>
 
-          <div className="row mx-5">
-            <div className="col-6  px-0">
-              <div className="d-flex justify-content-around ">
+          <div className='row mx-5'>
+            <div className='col-6  px-0'>
+              <div className='d-flex justify-content-around '>
                 <label> Faculty Name</label>
                 <label> Assigned Subject</label>
               </div>
               {facultyDataArray.map((faculty, index) => (
-                <Space.Compact className="w-100 mb-2" key={index}>
+                <Space.Compact className='w-100 mb-2' key={index}>
                   <Input
-                    className="text-center"
-                    placeholder="Enter Faculty Name"
+                    className='text-center'
+                    placeholder='Enter Faculty Name'
                     value={faculty.facultyName}
                     onChange={(e) =>
                       handleFacultyNameChange(index, e.target.value)
                     }
                   />
                   <Input
-                    className="text-center"
-                    placeholder="Enter Assigned Subject"
+                    className='text-center'
+                    placeholder='Enter Assigned Subject'
                     value={faculty.assignedSubject}
                     onChange={(e) =>
                       handleAssignedSubjectChange(index, e.target.value)
                     }
                   />
                   <Button
-                    className="btn btn-danger d-flex align-items-center"
+                    className='btn btn-danger d-flex align-items-center'
                     onClick={() => handleDeleteFacultyInputFieldButton(index)}
                   >
                     <MdDelete />
@@ -173,13 +179,13 @@ const InputForm = () => {
                 </Space.Compact>
               ))}
               <button
-                className="btn btn-secondary btn-sm mt-2"
+                className='btn btn-secondary btn-sm mt-2'
                 onClick={addNewInputFields}
               >
                 Add Faculty
               </button>
               <button
-                className="btn btn-primary btn-sm mt-2 ml-2 mx-2"
+                className='btn btn-primary btn-sm mt-2 ml-2 mx-2'
                 onClick={storeFacultyData}
               >
                 Store Faculty Data
@@ -188,7 +194,7 @@ const InputForm = () => {
           </div>
         </div>
       </div>
-      <ToastContainer theme="dark" position="top-center" pauseOnHover={false} />
+      <ToastContainer theme='dark' position='top-center' pauseOnHover={false} />
     </>
   );
 };
