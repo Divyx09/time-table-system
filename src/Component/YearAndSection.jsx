@@ -218,9 +218,13 @@ const YearAndSection = () => {
             <div className='border rounded p-2 mt-4'>
               <h4 className=''>Sections</h4>
               {year.sections.map((section, sectionIndex) => (
-                <div key={sectionIndex} className='position-relative'>
-                  <Form.Item>
+                <div
+                  key={sectionIndex}
+                  className='position-relative mt-3 pt-2 border-top'
+                >
+                  <Form.Item className='row'>
                     <Input
+                      className='col-10'
                       placeholder='Section Name'
                       value={section.name}
                       onChange={(e) =>
@@ -231,20 +235,21 @@ const YearAndSection = () => {
                         )
                       }
                     />
+                    <Button
+                      className='col-2'
+                      danger
+                      onClick={() => deleteSection(yearIndex, sectionIndex)}
+                    >
+                      Delete
+                    </Button>
                   </Form.Item>
-                  <Button
-                    danger
-                    onClick={() => deleteSection(yearIndex, sectionIndex)}
-                  >
-                    Delete Section
-                  </Button>
 
                   <h5 className='border-top mt-3 pt-2'>
                     Subjects and Faculties
                   </h5>
                   {section.assignedFacultyForSubject.map(
                     (assignment, subjectIndex) => (
-                      <div key={subjectIndex}>
+                      <div key={subjectIndex} className='mt-3'>
                         <Form.Item>
                           <Input
                             placeholder='Subject Name'
@@ -307,7 +312,7 @@ const YearAndSection = () => {
                     ),
                   )}
                   <Button
-                    className='position-absolute bottom-0 end-0'
+                    className=' bottom-0 end-0 position-absolute'
                     onClick={() =>
                       addSubjectAndFaculty(yearIndex, sectionIndex)
                     }
