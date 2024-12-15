@@ -7,7 +7,14 @@ const YearAndSection = () => {
     {
       year: "",
       faculties: [{ name: "" }],
-      sections: [{ name: "", assignedFacultyForSubject: [] }],
+      sections: [
+        {
+          name: "",
+          assignedFacultyForSubject: [
+            { subjectName: "", facultyName: "", lectureCount: "" },
+          ],
+        },
+      ],
     },
   ]);
 
@@ -17,15 +24,20 @@ const YearAndSection = () => {
       {
         year: "",
         faculties: [{ name: "" }],
-        sections: [{ name: "", assignedFacultyForSubject: [] }],
+        sections: [
+          {
+            name: "",
+            assignedFacultyForSubject: [
+              { subjectName: "", facultyName: "", lectureCount: "" },
+            ],
+          },
+        ],
       },
     ]);
   };
 
   const deleteYear = (yearIndex) => {
-    const updatedYears = [...years];
-    updatedYears.splice(yearIndex, 1);
-    setYears(updatedYears);
+    setYears(years.filter((_, index) => index !== yearIndex));
   };
 
   const updateYearName = (index, value) => {
@@ -40,15 +52,15 @@ const YearAndSection = () => {
     setYears(updatedYears);
   };
 
-  const updateFaculty = (yearIndex, facultyIndex, value) => {
-    const updatedYears = [...years];
-    updatedYears[yearIndex].faculties[facultyIndex].name = value;
-    setYears(updatedYears);
-  };
-
   const deleteFaculty = (yearIndex, facultyIndex) => {
     const updatedYears = [...years];
     updatedYears[yearIndex].faculties.splice(facultyIndex, 1);
+    setYears(updatedYears);
+  };
+
+  const updateFaculty = (yearIndex, facultyIndex, value) => {
+    const updatedYears = [...years];
+    updatedYears[yearIndex].faculties[facultyIndex].name = value;
     setYears(updatedYears);
   };
 
@@ -56,20 +68,22 @@ const YearAndSection = () => {
     const updatedYears = [...years];
     updatedYears[yearIndex].sections.push({
       name: "",
-      assignedFacultyForSubject: [],
+      assignedFacultyForSubject: [
+        { subjectName: "", facultyName: "", lectureCount: "" },
+      ],
     });
-    setYears(updatedYears);
-  };
-
-  const updateSectionName = (yearIndex, sectionIndex, value) => {
-    const updatedYears = [...years];
-    updatedYears[yearIndex].sections[sectionIndex].name = value;
     setYears(updatedYears);
   };
 
   const deleteSection = (yearIndex, sectionIndex) => {
     const updatedYears = [...years];
     updatedYears[yearIndex].sections.splice(sectionIndex, 1);
+    setYears(updatedYears);
+  };
+
+  const updateSectionName = (yearIndex, sectionIndex, value) => {
+    const updatedYears = [...years];
+    updatedYears[yearIndex].sections[sectionIndex].name = value;
     setYears(updatedYears);
   };
 
@@ -80,7 +94,16 @@ const YearAndSection = () => {
     ].assignedFacultyForSubject.push({
       subjectName: "",
       facultyName: "",
+      lectureCount: "",
     });
+    setYears(updatedYears);
+  };
+
+  const deleteSubjectAndFaculty = (yearIndex, sectionIndex, subjectIndex) => {
+    const updatedYears = [...years];
+    updatedYears[yearIndex].sections[
+      sectionIndex
+    ].assignedFacultyForSubject.splice(subjectIndex, 1);
     setYears(updatedYears);
   };
 
@@ -98,14 +121,6 @@ const YearAndSection = () => {
     setYears(updatedYears);
   };
 
-  const deleteSubjectAndFaculty = (yearIndex, sectionIndex, subjectIndex) => {
-    const updatedYears = [...years];
-    updatedYears[yearIndex].sections[
-      sectionIndex
-    ].assignedFacultyForSubject.splice(subjectIndex, 1);
-    setYears(updatedYears);
-  };
-
   const onSubmit = async () => {
     try {
       for (const year of years) {
@@ -118,6 +133,7 @@ const YearAndSection = () => {
               (assignment) => ({
                 subjectName: assignment.subjectName,
                 facultyName: assignment.facultyName,
+                lectureCount: assignment.lectureCount,
               }),
             ),
           })),
@@ -131,7 +147,14 @@ const YearAndSection = () => {
         {
           year: "",
           faculties: [{ name: "" }],
-          sections: [{ name: "", assignedFacultyForSubject: [] }],
+          sections: [
+            {
+              name: "",
+              assignedFacultyForSubject: [
+                { subjectName: "", facultyName: "", lectureCount: "" },
+              ],
+            },
+          ],
         },
       ]);
     } catch (error) {
@@ -141,105 +164,134 @@ const YearAndSection = () => {
   };
 
   return (
-    <div className='container mt-5'>
+    <div className='container mt-5 pb-5 col-6 '>
       <h3>Add Multiple Years with Sections</h3>
 
       {years.map((year, yearIndex) => (
         <Card
           key={yearIndex}
           title={`Year ${yearIndex + 1}`}
+          style={{ marginBottom: "20px" }}
           extra={
             <Button danger onClick={() => deleteYear(yearIndex)}>
               Delete Year
             </Button>
           }
-          style={{ marginBottom: "20px" }}
         >
           <Form layout='vertical'>
-            <Form.Item label='Year Name'>
+            <Form.Item
+              label='Year Name'
+              rules={[
+                { required: true, message: "Please input the year name" },
+              ]}
+            >
               <Input
                 value={year.year}
                 onChange={(e) => updateYearName(yearIndex, e.target.value)}
               />
             </Form.Item>
 
-            <h4>Faculties</h4>
-            {year.faculties.map((faculty, facultyIndex) => (
-              <Form.Item key={facultyIndex} className='row'>
-                <Input
-                  className='col-10'
-                  placeholder='Faculty Name'
-                  value={faculty.name}
-                  onChange={(e) =>
-                    updateFaculty(yearIndex, facultyIndex, e.target.value)
-                  }
-                />
-                <Button
-                  className='col-2'
-                  danger
-                  onClick={() => deleteFaculty(yearIndex, facultyIndex)}
-                >
-                  Delete
-                </Button>
-              </Form.Item>
-            ))}
-            <Button onClick={() => addFaculty(yearIndex)}>Add Faculty</Button>
-
-            <h4 className=''>Sections</h4>
-            {year.sections.map((section, sectionIndex) => (
-              <div key={sectionIndex} className=''>
-                <Form.Item className='row'>
+            <div className='border p-2 rounded'>
+              <h4>Faculties</h4>
+              {year.faculties.map((faculty, facultyIndex) => (
+                <Form.Item key={facultyIndex} className='row'>
                   <Input
+                    placeholder='Faculty Name'
                     className='col-10'
-                    placeholder='Section Name'
-                    value={section.name}
+                    value={faculty.name}
                     onChange={(e) =>
-                      updateSectionName(yearIndex, sectionIndex, e.target.value)
+                      updateFaculty(yearIndex, facultyIndex, e.target.value)
                     }
                   />
                   <Button
-                    className='col-2'
+                    className='col-2 '
                     danger
-                    onClick={() => deleteSection(yearIndex, sectionIndex)}
+                    onClick={() => deleteFaculty(yearIndex, facultyIndex)}
                   >
                     Delete
                   </Button>
                 </Form.Item>
-                <h5>Subjects and Faculties</h5>
-                {section.assignedFacultyForSubject.map(
-                  (assignment, subjectIndex) => (
-                    <div key={subjectIndex}>
-                      <Form.Item>
-                        <Input
-                          placeholder='Subject Name'
-                          value={assignment.subjectName}
-                          onChange={(e) =>
-                            updateSubjectOrFaculty(
-                              yearIndex,
-                              sectionIndex,
-                              subjectIndex,
-                              "subjectName",
-                              e.target.value,
-                            )
-                          }
-                        />
-                      </Form.Item>
-                      <Form.Item>
-                        <Input
-                          placeholder='Faculty Name'
-                          value={assignment.facultyName}
-                          onChange={(e) =>
-                            updateSubjectOrFaculty(
-                              yearIndex,
-                              sectionIndex,
-                              subjectIndex,
-                              "facultyName",
-                              e.target.value,
-                            )
-                          }
-                        />
+              ))}
+              <Button onClick={() => addFaculty(yearIndex)}>Add Faculty</Button>
+            </div>
+
+            <div className='border rounded p-2 mt-4'>
+              <h4 className=''>Sections</h4>
+              {year.sections.map((section, sectionIndex) => (
+                <div key={sectionIndex} className='position-relative'>
+                  <Form.Item>
+                    <Input
+                      placeholder='Section Name'
+                      value={section.name}
+                      onChange={(e) =>
+                        updateSectionName(
+                          yearIndex,
+                          sectionIndex,
+                          e.target.value,
+                        )
+                      }
+                    />
+                  </Form.Item>
+                  <Button
+                    danger
+                    onClick={() => deleteSection(yearIndex, sectionIndex)}
+                  >
+                    Delete Section
+                  </Button>
+
+                  <h5 className='border-top mt-3 pt-2'>
+                    Subjects and Faculties
+                  </h5>
+                  {section.assignedFacultyForSubject.map(
+                    (assignment, subjectIndex) => (
+                      <div key={subjectIndex}>
+                        <Form.Item>
+                          <Input
+                            placeholder='Subject Name'
+                            value={assignment.subjectName}
+                            onChange={(e) =>
+                              updateSubjectOrFaculty(
+                                yearIndex,
+                                sectionIndex,
+                                subjectIndex,
+                                "subjectName",
+                                e.target.value,
+                              )
+                            }
+                          />
+                        </Form.Item>
+                        <Form.Item>
+                          <Input
+                            placeholder='Faculty Name'
+                            value={assignment.facultyName}
+                            onChange={(e) =>
+                              updateSubjectOrFaculty(
+                                yearIndex,
+                                sectionIndex,
+                                subjectIndex,
+                                "facultyName",
+                                e.target.value,
+                              )
+                            }
+                          />
+                        </Form.Item>
+                        <Form.Item>
+                          <Input
+                            placeholder='Lecture Count'
+                            type='number'
+                            value={assignment.lectureCount}
+                            onChange={(e) =>
+                              updateSubjectOrFaculty(
+                                yearIndex,
+                                sectionIndex,
+                                subjectIndex,
+                                "lectureCount",
+                                e.target.value,
+                              )
+                            }
+                          />
+                        </Form.Item>
                         <Button
-                          className='mt-2'
                           danger
                           onClick={() =>
                             deleteSubjectAndFaculty(
@@ -251,29 +303,39 @@ const YearAndSection = () => {
                         >
                           Delete
                         </Button>
-                      </Form.Item>
-                    </div>
-                  ),
-                )}
-                <Button
-                  className='mb-2'
-                  onClick={() => addSubjectAndFaculty(yearIndex, sectionIndex)}
-                >
-                  Add Subject and Faculty
-                </Button>
-              </div>
-            ))}
-            <Button onClick={() => addSection(yearIndex)}>Add Section</Button>
+                      </div>
+                    ),
+                  )}
+                  <Button
+                    className='position-absolute bottom-0 end-0'
+                    onClick={() =>
+                      addSubjectAndFaculty(yearIndex, sectionIndex)
+                    }
+                  >
+                    Add Subject and Faculty
+                  </Button>
+                </div>
+              ))}
+            </div>
+            <Button onClick={() => addSection(yearIndex)} className='mt-2'>
+              Add Section
+            </Button>
           </Form>
         </Card>
       ))}
 
-      <Button type='primary' onClick={addYear}>
-        Add Year
-      </Button>
-      <Button type='primary' onClick={onSubmit} style={{ marginLeft: "10px" }}>
-        Submit
-      </Button>
+      <div className='text-center'>
+        <Button type='primary' onClick={addYear}>
+          Add Year
+        </Button>
+        <Button
+          type='primary'
+          onClick={onSubmit}
+          style={{ marginLeft: "10px" }}
+        >
+          Submit
+        </Button>
+      </div>
     </div>
   );
 };
