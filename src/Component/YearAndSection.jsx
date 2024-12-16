@@ -1,17 +1,24 @@
 import React, { useState } from "react";
-import { Form, Input, Button, message, Card } from "antd";
+import { Form, Input, Button, message, Card, TimePicker } from "antd";
 import axios from "axios";
 
 const YearAndSection = () => {
   const [years, setYears] = useState([
     {
       year: "",
+      startTime: "",
+      endTime: "",
       faculties: [{ name: "" }],
       sections: [
         {
           name: "",
           assignedFacultyForSubject: [
-            { subjectName: "", facultyName: "", lectureCount: "" },
+            {
+              subjectName: "",
+              facultyName: "",
+              lectureCount: "",
+              lectureTime: "",
+            },
           ],
         },
       ],
@@ -23,12 +30,19 @@ const YearAndSection = () => {
       ...years,
       {
         year: "",
+        startTime: "",
+        endTime: "",
         faculties: [{ name: "" }],
         sections: [
           {
             name: "",
             assignedFacultyForSubject: [
-              { subjectName: "", facultyName: "", lectureCount: "" },
+              {
+                subjectName: "",
+                facultyName: "",
+                lectureCount: "",
+                lectureTime: "",
+              },
             ],
           },
         ],
@@ -40,9 +54,9 @@ const YearAndSection = () => {
     setYears(years.filter((_, index) => index !== yearIndex));
   };
 
-  const updateYearName = (index, value) => {
+  const updateYearField = (index, field, value) => {
     const updatedYears = [...years];
-    updatedYears[index].year = value;
+    updatedYears[index][field] = value;
     setYears(updatedYears);
   };
 
@@ -69,7 +83,7 @@ const YearAndSection = () => {
     updatedYears[yearIndex].sections.push({
       name: "",
       assignedFacultyForSubject: [
-        { subjectName: "", facultyName: "", lectureCount: "" },
+        { subjectName: "", facultyName: "", lectureCount: "", lectureTime: "" },
       ],
     });
     setYears(updatedYears);
@@ -95,6 +109,7 @@ const YearAndSection = () => {
       subjectName: "",
       facultyName: "",
       lectureCount: "",
+      lectureTime: "",
     });
     setYears(updatedYears);
   };
@@ -126,6 +141,8 @@ const YearAndSection = () => {
       for (const year of years) {
         const payload = {
           year: year.year,
+          startTime: year.startTime,
+          endTime: year.endTime,
           faculties: year.faculties.map((faculty) => ({ name: faculty.name })),
           sections: year.sections.map((section) => ({
             name: section.name,
@@ -134,24 +151,32 @@ const YearAndSection = () => {
                 subjectName: assignment.subjectName,
                 facultyName: assignment.facultyName,
                 lectureCount: assignment.lectureCount,
+                lectureTime: assignment.lectureTime,
               }),
             ),
           })),
         };
 
-        await axios.post("http://localhost:8080/api/years", payload);
+        await axios.post("http://localhost:8080/api/timetable", payload);
       }
 
       message.success("Years and their sections added successfully!");
       setYears([
         {
           year: "",
+          startTime: "",
+          endTime: "",
           faculties: [{ name: "" }],
           sections: [
             {
               name: "",
               assignedFacultyForSubject: [
-                { subjectName: "", facultyName: "", lectureCount: "" },
+                {
+                  subjectName: "",
+                  facultyName: "",
+                  lectureCount: "",
+                  lectureTime: "",
+                },
               ],
             },
           ],
@@ -164,7 +189,7 @@ const YearAndSection = () => {
   };
 
   return (
-    <div className='container mt-5 pb-5 col-6 '>
+    <div className='container mt-5 pb-5 col-6'>
       <h3>Add Multiple Years with Sections</h3>
 
       {years.map((year, yearIndex) => (
@@ -179,17 +204,37 @@ const YearAndSection = () => {
           }
         >
           <Form layout='vertical'>
-            <Form.Item
-              label='Year Name'
-              rules={[
-                { required: true, message: "Please input the year name" },
-              ]}
-            >
+            <Form.Item label='Year Name'>
               <Input
                 value={year.year}
-                onChange={(e) => updateYearName(yearIndex, e.target.value)}
+                onChange={(e) =>
+                  updateYearField(yearIndex, "year", e.target.value)
+                }
               />
             </Form.Item>
+            <div className='row'>
+              <Form.Item label='Start Time' className='col-6 '>
+                <Input
+                  className='w-100'
+                  placeholder='e.g. 09:00'
+                  value={year.startTime}
+                  onChange={(e) =>
+                    updateYearField(yearIndex, "startTime", e.target.value)
+                  }
+                />
+              </Form.Item>
+
+              <Form.Item className='col-6' label='End Time'>
+                <Input
+                  className='w-100'
+                  placeholder='e.g. 17:00'
+                  value={year.endTime}
+                  onChange={(e) =>
+                    updateYearField(yearIndex, "endTime", e.target.value)
+                  }
+                />
+              </Form.Item>
+            </div>
 
             <div className='border p-2 rounded'>
               <h4>Faculties</h4>
@@ -204,7 +249,7 @@ const YearAndSection = () => {
                     }
                   />
                   <Button
-                    className='col-2 '
+                    className='col-2'
                     danger
                     onClick={() => deleteFaculty(yearIndex, facultyIndex)}
                   >
@@ -216,7 +261,7 @@ const YearAndSection = () => {
             </div>
 
             <div className='border rounded p-2 mt-4'>
-              <h4 className=''>Sections</h4>
+              <h4>Sections</h4>
               {year.sections.map((section, sectionIndex) => (
                 <div
                   key={sectionIndex}
@@ -296,6 +341,22 @@ const YearAndSection = () => {
                             }
                           />
                         </Form.Item>
+                        <Form.Item>
+                          <Input
+                            placeholder='Lecture Time'
+                            type='number'
+                            value={assignment.lectureTime}
+                            onChange={(e) =>
+                              updateSubjectOrFaculty(
+                                yearIndex,
+                                sectionIndex,
+                                subjectIndex,
+                                "lectureTime",
+                                e.target.value,
+                              )
+                            }
+                          />
+                        </Form.Item>
                         <Button
                           danger
                           onClick={() =>
@@ -312,7 +373,6 @@ const YearAndSection = () => {
                     ),
                   )}
                   <Button
-                    className=' bottom-0 end-0 position-absolute'
                     onClick={() =>
                       addSubjectAndFaculty(yearIndex, sectionIndex)
                     }
@@ -321,26 +381,18 @@ const YearAndSection = () => {
                   </Button>
                 </div>
               ))}
+              <Button onClick={() => addSection(yearIndex)}>Add Section</Button>
             </div>
-            <Button onClick={() => addSection(yearIndex)} className='mt-2'>
-              Add Section
-            </Button>
           </Form>
         </Card>
       ))}
 
-      <div className='text-center'>
-        <Button type='primary' onClick={addYear}>
-          Add Year
-        </Button>
-        <Button
-          type='primary'
-          onClick={onSubmit}
-          style={{ marginLeft: "10px" }}
-        >
-          Submit
-        </Button>
-      </div>
+      <Button type='primary' onClick={addYear} className='mt-3'>
+        Add Year
+      </Button>
+      <Button type='primary' onClick={onSubmit} className='mt-3 ml-3'>
+        Submit
+      </Button>
     </div>
   );
 };
