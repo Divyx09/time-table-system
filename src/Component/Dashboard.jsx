@@ -23,7 +23,7 @@ const Dashboard = () => {
       <Navbar />
       {/* <InputForm /> */}
       <YearAndSection />
-      {/* <GenerateTimetable data={data} /> */}
+      <GenerateTimetable data={data} />
     </div>
   );
 };
